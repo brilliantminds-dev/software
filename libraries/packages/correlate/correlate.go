@@ -77,7 +77,7 @@ func fn(i interface{}) string {
 
 
 func collectHeaders(header http.Header) ClientRequestHeaders {
-	var  headers ClientRequestHeaders
+	headers := make(ClientRequestHeaders)
 	for key, values := range header {
 		headers[key] = values
 	}
