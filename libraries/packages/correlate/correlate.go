@@ -53,6 +53,7 @@ type CorrelateService interface {
 
 func (c *Correlate) Info(st *Status, desc *Description) {
 	info := fmt.Sprintf(CORR_DETAILS, INFO, c.TraceId, &st, &desc, c.RemoteAddr, c.URL.Path, fn(c.HandlerName), c.ClientRequestHeaders)
+	
 	fmt.Println(info)
 
 }
