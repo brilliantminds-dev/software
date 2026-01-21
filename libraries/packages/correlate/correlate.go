@@ -52,6 +52,8 @@ type CorrelateService interface {
 }
 
 func (c *Correlate) Info(st *Status, desc *Description) {
+	info := fmt.Sprintf(CORR_DETAILS, EXCEPT, c.TraceId, &st, &desc, c.RemoteAddr, c.URL.Path, fn(c.HandlerName), c.ClientRequestHeaders)
+	fmt.Println(info)
 
 }
 func (c *Correlate) Except(st *Status, desc *Description) error {
@@ -65,7 +67,7 @@ func (c *Correlate) Success(st *Status, desc *Description) {
 func (c *Correlate) Fatal(st *Status, desc *Description) error {
 	fatal := fmt.Sprintf(CORR_DETAILS, FATAL, c.TraceId, &st, &desc, c.RemoteAddr, c.URL.Path, fn(c.HandlerName), c.ClientRequestHeaders)
 
-	return fmt.Errorf(fatal)
+	return fmt.Errorf("%s", fatal)
 }
 
 func fn(i interface{}) string {
