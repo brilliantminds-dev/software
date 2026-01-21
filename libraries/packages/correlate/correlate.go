@@ -10,18 +10,18 @@ import (
 )
 
 const (
-	INFO    = "INFO"
-	EXCEPT  = "EXCEPT"
-	SUCCESS = "SUCCESS"
-	FATAL   = "FATAL"
+	INFO         = "INFO"
+	EXCEPT       = "EXCEPT"
+	SUCCESS      = "SUCCESS"
+	FATAL        = "FATAL"
 	CORR_DETAILS = " Type: %s | correlation_id: %v |status: %v | desc: %v| client_ip: %v | path: %s | funcName: %v| client_headers: %v"
 )
 
-type TraceId string        // trace id to navigate the request
-type Status string         // status of the request
-type Description *string   // description in the request
-type HandlerName interface{}   //  handler name of the request
-type RequestEventTs string // timestamp of the request's event
+type TraceId string          // trace id to navigate the request
+type Status string           // status of the request
+type Description *string     // description in the request
+type HandlerName interface{} //  handler name of the request
+type RequestEventTs string   // timestamp of the request's event
 type ClientRequestHeaders map[string]any
 
 type Correlate struct {
@@ -32,13 +32,13 @@ type Correlate struct {
 }
 
 // New CorrelateRequest - Initialize New Reguest Correlation for REST
-func NewCorrelateRequest(request *http.Request,fnName interface{}) CorrelateService {
+func NewCorrelateRequest(request *http.Request, fnName interface{}) CorrelateService {
 
 	return &Correlate{
-		TraceId: TraceId(uuid.NewString()),
-		HandlerName: fnName,
+		TraceId:              TraceId(uuid.NewString()),
+		HandlerName:          fnName,
 		ClientRequestHeaders: collectHeaders(request.Header),
-		Request: request,
+		Request:              request,
 	}
 
 }
@@ -53,10 +53,9 @@ type CorrelateService interface {
 
 func (c *Correlate) Info(st *Status, desc *Description) {
 
-
 }
 func (c *Correlate) Except(st *Status, desc *Description) error {
-	exception := fmt.Sprintf(CORR_DETAILS,EXCEPT,c.TraceId,&st,&desc,c.RemoteAddr,c.URL.Path,fn(c.HandlerName),c.ClientRequestHeaders)
+	exception := fmt.Sprintf(CORR_DETAILS, EXCEPT, c.TraceId, &st, &desc, c.RemoteAddr, c.URL.Path, fn(c.HandlerName), c.ClientRequestHeaders)
 
 	return fmt.Errorf("%v", exception)
 }
@@ -64,19 +63,19 @@ func (c *Correlate) Success(st *Status, desc *Description) {
 
 }
 func (c *Correlate) Fatal(st *Status, desc *Description) error {
-	fatal := fmt.Sprintf(CORR_DETAILS,FATAL,c.TraceId,&st,&desc,c.RemoteAddr,c.URL.Path,fn(c.HandlerName),c.ClientRequestHeaders)
+	fatal := fmt.Sprintf(CORR_DETAILS, FATAL, c.TraceId, &st, &desc, c.RemoteAddr, c.URL.Path, fn(c.HandlerName), c.ClientRequestHeaders)
 
 	return fmt.Errorf(fatal)
 }
-
-
 
 func fn(i interface{}) string {
 	return runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 }
 
-
 func collectHeaders(header http.Header) ClientRequestHeaders {
+	if header == nil {
+		return nil
+	}
 	headers := make(ClientRequestHeaders)
 	for key, values := range header {
 		headers[key] = values
@@ -84,4 +83,3 @@ func collectHeaders(header http.Header) ClientRequestHeaders {
 
 	return headers
 }
-
