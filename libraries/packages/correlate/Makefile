@@ -1,6 +1,6 @@
 
 fmt:
-	go fmt
+	go fmt ./...
 
 test: fmt
 	go test -v ./...
@@ -9,7 +9,7 @@ add: test
 	git add .
 
 commit: add
-	git commit -m "<feature name>"
+	git commit -m "correlate: v1.0.0"
 
 # set upstream first
 push:

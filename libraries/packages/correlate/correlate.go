@@ -9,23 +9,25 @@ import (
 	"github.com/google/uuid"
 )
 
+// Constants INFO, EXCEPT, SUCCESS, FATAL
 const (
-	INFO         = "INFO"
-	EXCEPT       = "EXCEPT"
-	SUCCESS      = "SUCCESS"
-	FATAL        = "FATAL"
-	CORR_DETAILS = " Type: %s | correlation_id: %v |status: %v | desc: %v| client_ip: %v | path: %s | funcName: %v| client_headers: %v"
+	Info        = "INFO"
+	Except      = "EXCEPT"
+	Success     = "SUCCESS"
+	Fatal       = "FATAL"
+	CorrDetails = " Type: %s | correlation_id: %v | status: %v | desc: %v| host: %v | path: %s | funcName: %v| client_headers: %v"
 )
 
-type TraceId string          // trace id to navigate the request
+// TraceID, Status, Description, HandlerName, RequestEventTs, ClientRequestHeaders
+type TraceID string          // trace id to navigate the request
 type Status string           // status of the request
-type Description string     // description in the request
+type Description string      // description in the request
 type HandlerName interface{} //  handler name of the request
 type RequestEventTs string   // timestamp of the request's event
 type ClientRequestHeaders map[string]any
 
 type Correlate struct {
-	TraceId
+	TraceID
 	HandlerName
 	ClientRequestHeaders
 	*http.Request
@@ -35,7 +37,7 @@ type Correlate struct {
 func NewCorrelateRequest(request *http.Request, fnName interface{}) CorrelateService {
 
 	return &Correlate{
-		TraceId:              TraceId(uuid.NewString()),
+		TraceID:              TraceID(uuid.NewString()),
 		HandlerName:          fnName,
 		ClientRequestHeaders: collectHeaders(request.Header),
 		Request:              request,
@@ -46,29 +48,32 @@ func NewCorrelateRequest(request *http.Request, fnName interface{}) CorrelateSer
 // CorrelateService - Info, Except, Success, Fatal
 type CorrelateService interface {
 	Info(st Status, desc Description)
-	Except(st Status, desc Description) error
+	Except(st Status, desc Description)
 	Success(st Status, desc Description)
-	Fatal(st Status, desc Description) error
+	Fatal(st Status, desc Description)
 }
 
 func (c *Correlate) Info(st Status, desc Description) {
-	info := fmt.Sprintf(CORR_DETAILS, INFO, c.TraceId, st, desc, c.RemoteAddr, c.URL.Path, fn(c.HandlerName), c.ClientRequestHeaders)
+	info := fmt.Sprintf(CorrDetails, Info, c.TraceID, st, desc, c.Host, c.URL.Path, fn(c.HandlerName), c.ClientRequestHeaders)
 
 	fmt.Println(info)
 
 }
-func (c *Correlate) Except(st Status, desc Description) error {
-	exception := fmt.Sprintf(CORR_DETAILS, EXCEPT, c.TraceId, st, desc, c.RemoteAddr, c.URL.Path, fn(c.HandlerName), c.ClientRequestHeaders)
+func (c *Correlate) Except(st Status, desc Description) {
+	exception := fmt.Sprintf(CorrDetails, Except, c.TraceID, st, desc, c.Host, c.URL.Path, fn(c.HandlerName), c.ClientRequestHeaders)
 
-	return fmt.Errorf("%v", exception)
+	fmt.Println(exception)
 }
 func (c *Correlate) Success(st Status, desc Description) {
+	success := fmt.Sprintf(CorrDetails, Success, c.TraceID, st, desc, c.Host, c.URL.Path, fn(c.HandlerName), c.ClientRequestHeaders)
+
+	fmt.Println(success)
 
 }
-func (c *Correlate) Fatal(st Status, desc Description) error {
-	fatal := fmt.Sprintf(CORR_DETAILS, FATAL, c.TraceId, st, desc, c.RemoteAddr, c.URL.Path, fn(c.HandlerName), c.ClientRequestHeaders)
+func (c *Correlate) Fatal(st Status, desc Description) {
+	fatal := fmt.Sprintf(CorrDetails, Fatal, c.TraceID, st, desc, c.Host, c.URL.Path, fn(c.HandlerName), c.ClientRequestHeaders)
 
-	return fmt.Errorf("%s", fatal)
+	fmt.Println(fatal)
 }
 
 func fn(i interface{}) string {

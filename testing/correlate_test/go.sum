@@ -1,0 +1,4 @@
+github.com/brilliantminds-dev/software/libraries/packages/correlate v0.0.0-20260121201503-7b5a03d3f1d5 h1:ExpRu2izlXQz94kBsEjB+prLs3UPSyZxzN9IVBYb3Nc=
+github.com/brilliantminds-dev/software/libraries/packages/correlate v0.0.0-20260121201503-7b5a03d3f1d5/go.mod h1:fV7sTE37kcm498Nb4VgTh5qPQ9nzdA0bXUxiBzrLby8=
+github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
