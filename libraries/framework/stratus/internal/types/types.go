@@ -1,6 +1,10 @@
 package types
 
+import (
+	"net/http"
+)
+
 type Layer http.Handler
 type MiddleLayers []MiddleWare
-
-type Get func(string, http.ResponseWriter, *http.Request)
+type OtelIntegrationEnabled bool
+type MiddleWare func(http.Handler) http.Handler
