@@ -9,4 +9,4 @@ The format is based on **[Keep a Changelog](https://keepchangelog.com/en/1.0.0/)
 
 ### Added
 
-* initial release of correlate library
+* initial release of correlate

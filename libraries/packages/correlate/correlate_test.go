@@ -2,10 +2,11 @@ package correlate_test
 
 import (
 	"fmt"
-	c "github.com/brilliantminds-dev/software/libraries/packages/correlate"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	c "github.com/brilliantminds-dev/software/libraries/packages/correlate"
 )
 
 func TestCorrelate(t *testing.T) {
