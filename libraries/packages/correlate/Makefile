@@ -18,3 +18,4 @@ push:
 release:
 	git tag -a v[0-9].0-9.[0-9] -m "Release version [verson_number]"
 	git push origin v[0-9].[0-9].[0-9]
+	

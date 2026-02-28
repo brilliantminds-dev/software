@@ -32,7 +32,8 @@ func (s *Stratus) StratusRouter() StratusInterface {
 	return s.StratusInterface.(*http.ServeMux)
 }
 
-func (s *Stratus) Get(path string, handler func(http.ResponseWriter, *http.Request)) {
+func (s *Stratus) StratusResource( methods []string, path string, handler func(http.ResponseWriter, *http.Request)) {
+	
 	s.HandleFunc(path, handler)
 
 }
