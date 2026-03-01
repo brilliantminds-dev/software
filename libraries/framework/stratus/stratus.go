@@ -2,6 +2,8 @@ package stratus
 
 import (
 	"context"
+	"github.com/brilliantminds-dev/software/libraries/framework/stratus/internal/stratus_otel"
+	"log"
 	"net/http"
 	"os"
 
@@ -32,8 +34,8 @@ func (s *Stratus) StratusRouter() StratusInterface {
 	return s.StratusInterface.(*http.ServeMux)
 }
 
-func (s *Stratus) StratusResource( methods []string, path string, handler func(http.ResponseWriter, *http.Request)) {
-	
+func (s *Stratus) StratusResource(methods []string, path string, handler func(http.ResponseWriter, *http.Request)) {
+
 	s.HandleFunc(path, handler)
 
 }
@@ -52,7 +54,14 @@ func (s *Stratus) buildHandler() Handler {
 
 	// Wrap with OTEL last (outermost)
 	if s.OtelIntegrationEnabled {
-		h = otelhttp.NewHandler(h, os.Getenv("OTEL_SERVICE_NAME"))
+		svc := os.Getenv("OTEL_SERVICE_NAME")
+		if svc == "" || &svc == nil {
+			log.Fatal("OTEL_SERVICE_NAME env var is not set. please set export or set variable")
+
+		}
+
+		h = otelhttp.NewHandler(h, svc)
+
 	}
 
 	return h
@@ -69,6 +78,14 @@ func (s *Stratus) Start() {
 	h := s.buildHandler()
 
 	adapter := httpadapter.New(h)
+
+	stlp := stratus_otel.NewStratusOtelProvider(os.Getenv("OTEL_SERVICE_NAME"), "http://host.docker.internal:4318") // will use live one from monoscope soon
+	stp := stlp.InitTracer()
+	defer func() {
+		if err := stp.Shutdown(context.Background()); err != nil {
+			log.Printf("Error shutting down Stratus Web Framework Serverless Service OTEL tracer: %v", err)
+		}
+	}()
 
 	lambda.StartWithContext(context.Background(), adapter.ProxyWithContext)
 
