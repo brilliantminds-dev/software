@@ -3,7 +3,7 @@ package handlers
 import (
 	"bytes"
 	"context"
-	"crm-platform-management-api/internal/models"
+	"crm-api/internal/models"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"

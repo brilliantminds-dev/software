@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"context"
-	"crm-platform-management-api/internal/interfaces"
+	"crm-api/internal/interfaces"
 	"net/http"
 )
 

@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"crm-platform-management-api/internal/models"
-	"crm-platform-management-api/internal/pkg"
+	"crm-api/internal/models"
+	"crm-api/internal/pkg"
 	"encoding/json"
 	"errors"
 	"fmt"

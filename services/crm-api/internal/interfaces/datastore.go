@@ -1,6 +1,6 @@
 package interfaces
 
-import "crm-platform-management-api/internal/models"
+import "crm-api/internal/models"
 
 type Datastore interface {
 	CreateCRMUser(user *models.CRMUser) error

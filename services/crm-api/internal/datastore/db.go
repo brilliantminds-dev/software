@@ -1,10 +1,10 @@
 package datastore
 
 import (
-	"crm-platform-management-api/internal/config"
-	"crm-platform-management-api/internal/interfaces"
-	"crm-platform-management-api/internal/models"
-	"crm-platform-management-api/internal/pkg"
+	"crm-api/internal/config"
+	"crm-api/internal/interfaces"
+	"crm-api/internal/models"
+	"crm-api/internal/pkg"
 	"database/sql"
 	"errors"
 	"fmt"

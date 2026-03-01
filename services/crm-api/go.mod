@@ -1,4 +1,4 @@
-module crm-platform-management-api
+module crm-api
 
 go 1.24.0
 

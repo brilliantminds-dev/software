@@ -43,7 +43,7 @@ func (s *Stratus) Use(m types.MiddleWare) {
 }
 
 func (s *Stratus) buildHandler() Handler {
-	var h Handler = s.StratusInterface.(Handler)
+	var h = s.StratusInterface.(Handler)
 
 	// Apply middleware (inside → outside)
 	for i := len(s.MiddleLayers) - 1; i >= 0; i-- {
@@ -61,7 +61,7 @@ func (s *Stratus) buildHandler() Handler {
 func NewStratus() *Stratus {
 
 	return &Stratus{
-		StratusInterface: http.NewServeMux(),
+		StratusInterface: &http.ServeMux{},
 	}
 }
 

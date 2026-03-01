@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"crm-platform-management-api/internal/config"
-	"crm-platform-management-api/internal/datastore"
-	"crm-platform-management-api/internal/handlers"
-	"crm-platform-management-api/internal/interfaces"
-	"crm-platform-management-api/internal/middleware"
+	"crm-api/internal/config"
+	"crm-api/internal/datastore"
+	"crm-api/internal/handlers"
+	"crm-api/internal/interfaces"
+	"crm-api/internal/middleware"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -18,8 +18,6 @@ import (
 func newHandler(db interfaces.Datastore, ctx context.Context) *handlers.Handler {
 	return &handlers.Handler{db, ctx}
 }
-
-
 
 func main() {
 

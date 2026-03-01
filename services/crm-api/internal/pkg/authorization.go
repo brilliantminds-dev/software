@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"crm-platform-management-api/internal/models"
+	"crm-api/internal/models"
 	"errors"
 	"net/http"
 	"slices"

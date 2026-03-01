@@ -6,7 +6,7 @@ repos:
     - id: go-vet
     - id: go-imports
     - id: validate-toml
-    - id: no-go-testing
+    - id: no-go-sandbox_apps
     - id: golangci-lint
     - id: go-unit-tests
     - id: go-build

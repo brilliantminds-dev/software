@@ -1,7 +1,7 @@
 package jwt_token
 
 import (
-	"crm-platform-management-api/internal/models"
+	"crm-api/internal/models"
 	"github.com/golang-jwt/jwt/v4"
 	"time"
 )

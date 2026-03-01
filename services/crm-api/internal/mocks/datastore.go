@@ -1,11 +1,11 @@
 package mocks
 
 import (
-	"crm-platform-management-api/internal/models"
+	"crm-api/internal/models"
 	"time"
 )
 
-// mocks setup for unit testing
+// mocks setup for unit sandbox_apps
 
 type mockDatastore struct {
 }
