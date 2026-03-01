@@ -10,8 +10,17 @@ Resources:
   ServiceFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: go1.x
       Handler: bootstrap
+      Runtime: provided.al2 # Recommended for Go
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          # Tell ADOT to use the default config or a custom one
+          OPENTELEMETRY_COLLECTOR_CONFIG_FILE: /var/task/otel-config.yaml
+      Layers:
+        # Replace <region> with your deployment region (e.g., us-east-1)
+        - !Sub arn:aws:lambda:${AWS::Region}:901934551650:layer:aws-otel-collector-amd64-ver-0-115-0:1
       CodeUri: example/
       Events:
         AlbEvent:
