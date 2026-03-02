@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/brilliantminds-dev/software/libraries/framework/stratus/internal/stratus_otel"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda"
 	"go.opentelemetry.io/otel"
 	"log"
 	"net/http"
@@ -86,15 +87,23 @@ func (s *Stratus) Start() {
 	h := s.buildHandler()
 
 	adapter := httpadapter.New(h)
+	if s.OtelIntegrationEnabled {
+		otelHandler := otelhttp.NewHandler(h, "stratus-web-framework")
+		adapter = httpadapter.New(otelHandler)
+		stlp := stratus_otel.NewStratusOtelProvider(os.Getenv("OTEL_SERVICE_NAME"), "http://host.docker.internal:4318") // will use live one from monoscope soon
+		stp := stlp.InitTracer()
+		defer func() {
+			if err := stp.Shutdown(context.Background()); err != nil {
+				log.Printf("Error shutting down Stratus Web Framework Serverless Service OTEL tracer: %v", err)
+			}
+		}()
 
-	stlp := stratus_otel.NewStratusOtelProvider(os.Getenv("OTEL_SERVICE_NAME"), "http://host.docker.internal:4318") // will use live one from monoscope soon
-	stp := stlp.InitTracer()
-	defer func() {
-		if err := stp.Shutdown(context.Background()); err != nil {
-			log.Printf("Error shutting down Stratus Web Framework Serverless Service OTEL tracer: %v", err)
-		}
-	}()
+		lambda.Start(otellambda.InstrumentHandler(adapter.ProxyWithContext,
+			otellambda.WithTracerProvider(stp)))
+		return
+	} else {
+		lambda.StartWithContext(context.Background(), adapter.ProxyWithContext)
 
-	lambda.StartWithContext(context.Background(), adapter.ProxyWithContext)
+	}
 
 }
