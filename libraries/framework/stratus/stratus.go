@@ -2,7 +2,9 @@ package stratus
 
 import (
 	"context"
+	"fmt"
 	"github.com/brilliantminds-dev/software/libraries/framework/stratus/internal/stratus_otel"
+	"go.opentelemetry.io/otel"
 	"log"
 	"net/http"
 	"os"
@@ -35,6 +37,12 @@ func (s *Stratus) StratusRouter() StratusInterface {
 }
 
 func (s *Stratus) StratusResource(methods []string, path string, handler func(http.ResponseWriter, *http.Request)) {
+	tracer := otel.Tracer("my-lambda-tracer")
+	// Start a span for Stratus resource
+	_, span := tracer.Start(context.Background(), "handler-span")
+	event := fmt.Sprintf("StratusResource called for path : %s", path)
+	span.AddEvent(event)
+	defer span.End()
 
 	s.HandleFunc(path, handler)
 

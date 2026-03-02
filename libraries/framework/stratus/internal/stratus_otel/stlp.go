@@ -29,14 +29,14 @@ func NewStratusOtelProvider(svc string, endpoint string) *StratusOtelProvider {
 }
 
 func (stlp *StratusOtelProvider) InitTracer() *trace.TracerProvider {
-	exporter, err := otlptracehttp.New(context.Background(), otlptracehttp.WithEndpoint("127.0.0.1:4318"), otlptracehttp.WithInsecure())
+	exporter, err := otlptracehttp.New(stlp.Context, otlptracehttp.WithEndpoint(stlp.Endpoint), otlptracehttp.WithInsecure())
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	tp := trace.NewTracerProvider(
 		trace.WithBatcher(exporter), trace.WithResource(resource.NewWithAttributes(
-			semconv.SchemaURL, semconv.ServiceNameKey.String("stratus-web-framework-serveless-service"))))
+			semconv.SchemaURL, semconv.ServiceNameKey.String("stratus-web-framework-serverless-service"))))
 	otel.SetTracerProvider(tp)
 	return tp
 
