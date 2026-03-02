@@ -89,7 +89,7 @@ func (s *Stratus) Start() {
 	adapter := httpadapter.New(h)
 	if s.OtelIntegrationEnabled {
 		log.Println("Starting Lambda with Otel Integration Enabled...")
-		stlp := stratus_otel.NewStratusOtelProvider(os.Getenv("OTEL_SERVICE_NAME"), "0.0.0.0:4318") // will use live one from monoscope soon
+		stlp := stratus_otel.NewStratusOtelProvider() // will use live one from monoscope soon
 		stp := stlp.InitTracer()
 		defer func() {
 			if err := stp.Shutdown(context.Background()); err != nil {

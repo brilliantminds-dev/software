@@ -8,6 +8,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"log"
+	"os"
 )
 
 type StratusOtelService interface {
@@ -20,11 +21,11 @@ type StratusOtelProvider struct {
 	Endpoint    string
 }
 
-func NewStratusOtelProvider(svc string, endpoint string) *StratusOtelProvider {
+func NewStratusOtelProvider() *StratusOtelProvider {
 	return &StratusOtelProvider{
 		context.Background(),
-		svc,
-		endpoint,
+		os.Getenv("OTEL_SERVICE_NAME"),
+		os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT"),
 	}
 }
 
@@ -35,8 +36,12 @@ func (stlp *StratusOtelProvider) InitTracer() *trace.TracerProvider {
 	}
 
 	tp := trace.NewTracerProvider(
-		trace.WithBatcher(exporter), trace.WithResource(resource.NewWithAttributes(
-			semconv.SchemaURL, semconv.ServiceNameKey.String("stratus-web-framework-serverless-service"))))
+		trace.WithSampler(trace.AlwaysSample()),
+		trace.WithBatcher(exporter),
+		trace.WithResource(
+			resource.NewWithAttributes(
+				semconv.SchemaURL,
+				semconv.ServiceNameKey.String("stratus-web-framework-serverless-service"))))
 	otel.SetTracerProvider(tp)
 	return tp
 
