@@ -88,9 +88,10 @@ func (s *Stratus) Start() {
 
 	adapter := httpadapter.New(h)
 	if s.OtelIntegrationEnabled {
+		log.Println("Starting Lambda with Otel Integration Enabled...")
 		otelHandler := otelhttp.NewHandler(h, "stratus-web-framework")
 		adapter = httpadapter.New(otelHandler)
-		stlp := stratus_otel.NewStratusOtelProvider(os.Getenv("OTEL_SERVICE_NAME"), "http://host.docker.internal:4318") // will use live one from monoscope soon
+		stlp := stratus_otel.NewStratusOtelProvider(os.Getenv("OTEL_SERVICE_NAME"), "0.0.0.0:4318") // will use live one from monoscope soon
 		stp := stlp.InitTracer()
 		defer func() {
 			if err := stp.Shutdown(context.Background()); err != nil {
@@ -98,10 +99,11 @@ func (s *Stratus) Start() {
 			}
 		}()
 
-		lambda.Start(otellambda.InstrumentHandler(adapter.ProxyWithContext,
+		lambda.Start(otellambda.InstrumentHandler(adapter.Proxy,
 			otellambda.WithTracerProvider(stp)))
 		return
 	} else {
+		log.Println("Starting Lambda with Otel Integration Disabled...")
 		lambda.StartWithContext(context.Background(), adapter.ProxyWithContext)
 
 	}
