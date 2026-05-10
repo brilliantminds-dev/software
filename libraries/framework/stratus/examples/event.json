@@ -4,11 +4,8 @@
       "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-2:123456789012:targetgroup/lambda-279XGJDqGZ5rsrHC2Fjr/49e9d65c45c6791a"
     }
   },
-  "httpMethod": "GET",
-  "path": "/hello",
-  "queryStringParameters": {
-    "query": "1234ABCD"
-  },
+  "httpMethod": "POST",
+  "path": "/stratus/post",
   "headers": {
     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
     "accept-encoding": "gzip",
@@ -23,6 +20,6 @@
     "x-forwarded-proto": "http",
     "x-imforwards": "20"
   },
-  "body": "eyJ0ZXN0IjoiYm9keSJ9",
-  "isBase64Encoded": true
+  "body": "{\"user_id\": \"123\", \"action\": \"login\"}",
+  "isBase64Encoded": false
 }

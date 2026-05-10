@@ -1,14 +1,11 @@
 package stratus
 
 import (
-	"context"
-	"fmt"
-	"github.com/brilliantminds-dev/software/libraries/framework/stratus/internal/stratus_otel"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda"
-	"go.opentelemetry.io/otel"
 	"log"
 	"net/http"
 	"os"
+
+	"go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter" // Added missing import
@@ -37,16 +34,24 @@ func (s *Stratus) StratusRouter() StratusInterface {
 	return s.StratusInterface.(*http.ServeMux)
 }
 
-func (s *Stratus) StratusResource(methods []string, path string, handler func(http.ResponseWriter, *http.Request)) {
-	tracer := otel.Tracer("my-lambda-tracer")
-	// Start a span for Stratus resource
-	_, span := tracer.Start(context.Background(), "handler-span")
-	event := fmt.Sprintf("StratusResource called for path : %s", path)
-	span.AddEvent(event)
-	defer span.End()
-
+func (s *Stratus) Get(path string, handler func(http.ResponseWriter, *http.Request)) {
 	s.HandleFunc(path, handler)
+}
 
+func (s *Stratus) Post(path string, handler func(http.ResponseWriter, *http.Request)) {
+	s.HandleFunc(path, handler)
+}
+
+func (s *Stratus) Put(path string, handler func(http.ResponseWriter, *http.Request)) {
+	s.HandleFunc(path, handler)
+}
+
+func (s *Stratus) Delete(path string, handler func(http.ResponseWriter, *http.Request)) {
+	s.HandleFunc(path, handler)
+}
+
+func (s *Stratus) Patch(path string, handler func(http.ResponseWriter, *http.Request)) {
+	s.HandleFunc(path, handler)
 }
 
 func (s *Stratus) Use(m types.MiddleWare) {
@@ -66,9 +71,7 @@ func (s *Stratus) buildHandler() Handler {
 		svc := os.Getenv("OTEL_SERVICE_NAME")
 		if svc == "" || &svc == nil {
 			log.Fatal("OTEL_SERVICE_NAME env var is not set. please set export or set variable")
-
 		}
-
 		h = otelhttp.NewHandler(h, svc)
 
 	}
@@ -83,27 +86,22 @@ func NewStratus() *Stratus {
 	}
 }
 
+func (s *Stratus) StratusAdapter(handler Handler) *httpadapter.HandlerAdapter {
+	adapter := httpadapter.New(handler)
+	return adapter
+}
+
 func (s *Stratus) Start() {
 	h := s.buildHandler()
+	adapter := s.StratusAdapter(h)
 
-	adapter := httpadapter.New(h)
 	if s.OtelIntegrationEnabled {
 		log.Println("Starting Lambda with Otel Integration Enabled...")
-		stlp := stratus_otel.NewStratusOtelProvider(os.Getenv("OTEL_SERVICE_NAME"), "0.0.0.0:4318") // will use live one from monoscope soon
-		stp := stlp.InitTracer()
-		defer func() {
-			if err := stp.Shutdown(context.Background()); err != nil {
-				log.Printf("Error shutting down Stratus Web Framework Serverless Service OTEL tracer: %v", err)
-			}
-		}()
-
-		lambda.Start(otellambda.InstrumentHandler(adapter.Proxy,
-			otellambda.WithTracerProvider(stp)))
+		lambda.Start(otellambda.InstrumentHandler(adapter.Proxy))
 		return
-	} else {
-		log.Println("Starting Lambda with Otel Integration Disabled...")
-		lambda.StartWithContext(context.Background(), adapter.ProxyWithContext)
-
 	}
+
+	log.Println("Starting Lambda with Otel Integration Disabled...")
+	lambda.Start(adapter.ProxyWithContext)
 
 }
